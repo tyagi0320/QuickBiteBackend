@@ -38,25 +38,33 @@ from app.middleware.auth_middleware import auth_middleware
 import os
 
 app = FastAPI()
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
-# 1. Custom Auth (Runs second)
+# 1. Clean the Frontend URL (Handle cases where Env Var might be missing)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+
+@app.get("/")
+async def root():
+    return {"message": "QuickBite API is running", "docs": "/docs"}
+
+
 @app.middleware("http")
 async def add_auth_middleware(request: Request, call_next):
     return await auth_middleware(request, call_next)
 
-# 2. CORS (Runs first - must wrap the auth middleware)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL.rstrip("/")], # Added rstrip to prevent trailing slash errors
+    allow_origins=[FRONTEND_URL, "http://localhost:5173"], 
     allow_credentials=True, 
     allow_methods=['*'],
     allow_headers=["*"]
 )
 
-# 3. Routes and Statics
-if not os.path.exists("uploads"):
-    os.makedirs("uploads")
+upload_dir = os.path.join(os.getcwd(), "uploads")
+if not os.path.exists(upload_dir):
+    os.makedirs(upload_dir)
 
-app.mount("/images", StaticFiles(directory="uploads"), name="static")
+app.mount("/images", StaticFiles(directory=upload_dir), name="static")
+
 app.include_router(api_router)
+
