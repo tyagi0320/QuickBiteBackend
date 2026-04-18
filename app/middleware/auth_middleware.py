@@ -12,7 +12,8 @@ async def auth_middleware(request: Request, call_next):
 
     # 2. Skip authentication for public routes
     # Adjust these paths to match your actual route names (e.g., /api/v1/auth/login)
-    public_paths = ["/login", "/register", "/foods", "/"]
+    # public_paths = ["/login", "/register", "/foods", "/"]
+    public_paths = {"/login", "/register", "/foods", "/", "/docs", "/openapi.json"} 
     if any(request.url.path.endswith(path) for path in public_paths):
         return await call_next(request)
     
