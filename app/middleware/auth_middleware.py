@@ -21,9 +21,9 @@ async def auth_middleware(request: Request, call_next):
 
     auth_header = request.headers.get("Authorization")
 
-    if auth_header and auth_header.startswith("Bearer"):
-        # token = auth_header.split(" ")[1]
-        token = auth_header.split(maxsplit=1)[1] 
+    if auth_header and auth_header.startswith("Bearer"): #Update to "Bearer "
+        token = auth_header.split(" ")[1]  #use this token with "Bearer "
+        # token = auth_header.split(maxsplit=1)[1] 
 
         try:
             payload = jwt.decode(
