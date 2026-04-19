@@ -59,7 +59,7 @@ def update_cart_quantity(
     return cart_item
 
 
-@router.get("/", response_model=list[CartResponse])
+@router.get("", response_model=list[CartResponse])
 def get_cart(
     db: Session = Depends(get_db),
     current_user=Depends(user_only)
